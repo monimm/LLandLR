@@ -13,7 +13,7 @@ public class Demo {
         test.Init();
         test.createTable();
         test.analyzeLL();
-        test.analyzeSLR();
+        //test.analyzeSLR();
         test.ouput();
     }
 }
@@ -24,7 +24,7 @@ class Test {
     //符号串first集
     public HashMap<String, HashSet<Character>> firstSetX = new HashMap<>();
     //开始符
-    public Character S = 'E';
+    public static char S = 'S';
     public HashMap<Character, HashSet<Character>> followSet = new HashMap<>();
     //非终结符
     public HashSet<Character> VnSet = new HashSet<>();
@@ -49,11 +49,11 @@ class Test {
             {"10", "", "r3", "r3", "", "r3", "r3", "", "", ""},
             {"11", "", "r5", "r5", "", "r5", "r5", "", "", ""}};
 
-    public String[] inputExperssion = {"E->TK", "K->+TK", "K->~", "T->FM", "M->*FM", "M->~", "F->i", "F->(E)"};
+    public String[] inputExperssion = { "S->I", "S->o", "I->i(E)SL", "L->eS", "L->~", "E->a", "E->b"};
     public Stack<Character> analyzeStatck = new Stack<>();
     public Stack<String> stackState = new Stack<>();
     public Stack<Character> stackSymbol = new Stack<>();
-    public String strInput = "i+i*i$";
+    public String strInput = "i(a)i(b)oeo$";
     public String action = "";
     public String[] LRGS = {"E->E+T", "E->T", "T->T*F", "T->F", "F->(E)", "F->i"};
     int index = 0;
@@ -162,7 +162,7 @@ class Test {
             int i = s.length() - 1;
             while (i >= 0) {
                 char cur = s.charAt(i);
-                //只处理非终结符
+                //只处理非终结符  I->i(E)SL
                 if (VnSet.contains(cur)) {
                     // 都按 A->αBβ  形式处理
                     //1.若β不存在   followA 加入 followB
@@ -170,7 +170,9 @@ class Test {
                     //3.若β存在  且first(β)包含空串  followA 加入 followB
                     String right = s.substring(i + 1);
                     HashSet<Character> rightFirstSet;
-                    HashSet<Character> curFollowSet = followSet.containsKey(cur) ? followSet.get(cur) : new HashSet<>();
+                    if(!followSet.containsKey(cur))
+                        getFollow(cur);
+                    HashSet<Character> curFollowSet = followSet.get(cur);
                     //先找出first(β),将非空的加入followB
                     if (0 == right.length()) {
                         curFollowSet.addAll(leftFollowSet);
@@ -237,7 +239,7 @@ class Test {
         System.out.println("****************LL分析过程**********");
         System.out.println("               Stack           Input     Action");
         analyzeStatck.push('$');
-        analyzeStatck.push('E');
+        analyzeStatck.push(S);
         displayLL();
         char X = analyzeStatck.peek();
         while (X != '$') {
