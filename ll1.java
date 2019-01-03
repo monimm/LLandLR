@@ -192,10 +192,10 @@ class Test {
                         //非空first集 加入 followB
                         HashSet<Character> setF = null;
                         if(right.length() == 1){
-                        	if(firstSet.containsKey(right.charAt(0)))
-                        		getFirst(right.charAt(0));
+                            if(!firstSet.containsKey(right.charAt(0)))
+                        	getFirst(right.charAt(0));
                             setF = firstSet.get(right.charAt(0));
-						}
+			}
                         else{
                             //先找出右部的first集
                             if(!firstSetX.containsKey(right))
