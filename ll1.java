@@ -96,34 +96,34 @@ class Test {
     public void getFirst(Character c) {
         ArrayList<String> list = experssionSet.get(c);
         HashSet<Character> set = firstSet.containsKey(c) ? firstSet.get(c) : new HashSet<Character>();
-        // cÎªÖÕ½á·û Ö±½ÓÌí¼Ó
+        // cä¸ºç»ˆç»“ç¬¦ ç›´æ¥æ·»åŠ 
         if (VtSet.contains(c)) {
             set.add(c);
             firstSet.put(c, set);
             return;
         }
-        // cÎª·ÇÖÕ½á·û ´¦ÀíÆäÃ¿Ìõ²úÉúÊ½
+        // cä¸ºéç»ˆç»“ç¬¦ å¤„ç†å…¶æ¯æ¡äº§ç”Ÿå¼
         for (String s : list) {
-            // c ÍÆ³ö¿Õ´® Ö±½ÓÌí¼Ó
+            // c æ¨å‡ºç©ºä¸² ç›´æ¥æ·»åŠ 
             if (s == Character.toString('~')) {
                 set.add('~');
             }
-            // X -> Y1Y2Y3¡­ Çé¿ö
+            // X -> Y1Y2Y3â€¦ æƒ…å†µ
             else {
-                // ´Ó×óÍùÓÒÉ¨ÃèÉú³ÉÊ½ÓÒ²¿
+                // ä»å·¦å¾€å³æ‰«æç”Ÿæˆå¼å³éƒ¨
                 int i = 0;
                 while (i < s.length()) {
                     char tn = s.charAt(i);
-                    //µİ¹é´¦Àí·ÀÖ¹Î´³õÊ¼»¯
+                    //é€’å½’å¤„ç†é˜²æ­¢æœªåˆå§‹åŒ–
                     getFirst(tn);
                     HashSet<Character> tvSet = firstSet.get(tn);
-                    // ½«Æäfirst¼¯¼ÓÈë×ó²¿
+                    // å°†å…¶firsté›†åŠ å…¥å·¦éƒ¨
                     for (Character tmp : tvSet)
                         set.add(tmp);
-                    // Èô°üº¬¿Õ´® ´¦ÀíÏÂÒ»¸ö·ûºÅ
+                    // è‹¥åŒ…å«ç©ºä¸² å¤„ç†ä¸‹ä¸€ä¸ªç¬¦å·
                     if (tvSet.contains('~'))
                         i++;
-                    // ·ñÔòÍË³ö ´¦ÀíÏÂÒ»¸ö²úÉúÊ½
+                    // å¦åˆ™é€€å‡º å¤„ç†ä¸‹ä¸€ä¸ªäº§ç”Ÿå¼
                     else
                         break;
                 }
@@ -134,22 +134,22 @@ class Test {
 
     public void getFirst(String s) {
         HashSet<Character> set = (firstSetX.containsKey(s))? firstSetX.get(s) : new HashSet<Character>();
-        // ´Ó×óÍùÓÒÉ¨Ãè¸ÃÊ½
+        // ä»å·¦å¾€å³æ‰«æè¯¥å¼
         int i = 0;
         while (i < s.length()) {
             char tn = s.charAt(i);  
             HashSet<Character> tvSet = firstSet.get(tn);
-            // ½«Æä·Ç¿Õ first¼¯¼ÓÈë×ó²¿
+            // å°†å…¶éç©º firsté›†åŠ å…¥å·¦éƒ¨
             for (Character tmp : tvSet)
                 if(tmp != '~')
                     set.add(tmp);
-            // Èô°üº¬¿Õ´® ´¦ÀíÏÂÒ»¸ö·ûºÅ
+            // è‹¥åŒ…å«ç©ºä¸² å¤„ç†ä¸‹ä¸€ä¸ªç¬¦å·
             if (tvSet.contains('~'))
                 i++;
-            // ·ñÔò½áÊø
+            // å¦åˆ™ç»“æŸ
             else
                 break;
-            // µ½ÁËÎ²²¿ ¼´ËùÓĞ·ûºÅµÄfirst¼¯¶¼°üº¬¿Õ´® °Ñ¿Õ´®¼ÓÈë
+            // åˆ°äº†å°¾éƒ¨ å³æ‰€æœ‰ç¬¦å·çš„firsté›†éƒ½åŒ…å«ç©ºä¸² æŠŠç©ºä¸²åŠ å…¥
             if (i == s.length()) {
                 set.add('~');
             }
@@ -161,11 +161,11 @@ class Test {
     public void getFollow(char c) {
         ArrayList<String> list = experssionSet.get(c);
         HashSet<Character> setA = followSet.containsKey(c) ? followSet.get(c) : new HashSet<Character>();
-        //Èç¹ûÊÇ¿ªÊ¼·û Ìí¼Ó $ 
+        //å¦‚æœæ˜¯å¼€å§‹ç¬¦ æ·»åŠ  $ 
         if (c == S) {
             setA.add('$');
         }
-        //²éÕÒÊäÈëµÄËùÓĞ²úÉúÊ½£¬È·¶¨cµÄºó¸ú ÖÕ½á·û
+        //æŸ¥æ‰¾è¾“å…¥çš„æ‰€æœ‰äº§ç”Ÿå¼ï¼Œç¡®å®šcçš„åè·Ÿ ç»ˆç»“ç¬¦
         for (Character ch : VnSet) {
             ArrayList<String> l = experssionSet.get(ch);
             for (String s : l) 
@@ -174,30 +174,32 @@ class Test {
                         setA.add(s.charAt(i + 1));
         }
         followSet.put(c, setA);
-        //´¦ÀícµÄÃ¿Ò»Ìõ²úÉúÊ½
+        //å¤„ç†cçš„æ¯ä¸€æ¡äº§ç”Ÿå¼
         for (String s : list) {
             int i = s.length() - 1;
             while (i >= 0 ) {
                 char tn = s.charAt(i);
-                //Ö»´¦Àí·ÇÖÕ½á·û
+                //åªå¤„ç†éç»ˆç»“ç¬¦
                 if(VnSet.contains(tn)){
-                    // ¶¼°´ A->¦ÁB¦Â  ĞÎÊ½´¦Àí
-                    //Èô¦Â²»´æÔÚ   followA ¼ÓÈë followB
-                    //Èô¦Â´æÔÚ£¬°Ñ¦ÂµÄ·Ç¿Õfirst¼¯  ¼ÓÈëfollowB
-                    //Èô¦Â´æÔÚ  ÇÒ first(¦Â)°üº¬¿Õ´®   followA ¼ÓÈë followB
+                    // éƒ½æŒ‰ A->Î±BÎ²  å½¢å¼å¤„ç†
+                    //è‹¥Î²ä¸å­˜åœ¨   followA åŠ å…¥ followB
+                    //è‹¥Î²å­˜åœ¨ï¼ŒæŠŠÎ²çš„éç©ºfirsté›†  åŠ å…¥followB
+                    //è‹¥Î²å­˜åœ¨  ä¸” first(Î²)åŒ…å«ç©ºä¸²   followA åŠ å…¥ followB
 
-                    //Èô¦Â´æÔÚ 
+                    //è‹¥Î²å­˜åœ¨ 
                     if (s.length() - i - 1 > 0) {
                         String right = s.substring(i + 1);
-                        //·Ç¿Õfirst¼¯ ¼ÓÈë followB
+                        //éç©ºfirsté›† åŠ å…¥ followB
                         HashSet<Character> setF = null;
-                        if( right.length() == 1 && firstSet.containsKey(right.charAt(0)))
+                        if(right.length() == 1){
+                        	if(firstSet.containsKey(right.charAt(0)))
+                        		getFirst(right.charAt(0));
                             setF = firstSet.get(right.charAt(0));
+						}
                         else{
-                            if(!firstSetX.containsKey(right)){
-                                HashSet<Character> set = new HashSet<Character>();
-                                firstSetX.put(right, set);
-                            }
+                            //å…ˆæ‰¾å‡ºå³éƒ¨çš„firsté›†
+                            if(!firstSetX.containsKey(right))
+                                getFirst(right);
                             setF = firstSetX.get(right);
                         }
                         HashSet<Character> setX = followSet.containsKey(tn) ? followSet.get(tn) : new HashSet<Character>();
@@ -206,7 +208,7 @@ class Test {
                                 setX.add(var);
                         followSet.put(tn, setX);
  
-                        // Èôfirst(¦Â)°üº¬¿Õ´®   followA ¼ÓÈë followB
+                        // è‹¥first(Î²)åŒ…å«ç©ºä¸²   followA åŠ å…¥ followB
                         if(setF.contains('~')){
                             if(tn != c){
                                 HashSet<Character> setB = followSet.containsKey(tn) ? followSet.get(tn) : new HashSet<Character>();
@@ -216,9 +218,9 @@ class Test {
                              }  
                         }
                      }
-                    //Èô¦Â²»´æÔÚ   followA ¼ÓÈë followB
+                    //è‹¥Î²ä¸å­˜åœ¨   followA åŠ å…¥ followB
                     else{
-                        // AºÍBÏàÍ¬²»Ìí¼Ó 
+                        // Aå’ŒBç›¸åŒä¸æ·»åŠ  
                         if(tn != c){
                             HashSet<Character> setB = followSet.containsKey(tn) ? followSet.get(tn) : new HashSet<Character>();
                             for (Character var : setA)
@@ -228,7 +230,7 @@ class Test {
                     }
                     i--;
                 }  
-                //ÖÕ½á·ûÍùÇ°¿´  Èç A->aaaBCDaaaa  ´ËÊ±¦ÂÎª CDaaaa 
+                //ç»ˆç»“ç¬¦å¾€å‰çœ‹  å¦‚ A->aaaBCDaaaa  æ­¤æ—¶Î²ä¸º CDaaaa 
                 else i--;         
              }
         }    
@@ -238,20 +240,20 @@ class Test {
     public void createTable() {
         Object[] VtArray = VtSet.toArray();
         Object[] VnArray = VnSet.toArray();
-        // Ô¤²â·ÖÎö±í³õÊ¼»¯
+        // é¢„æµ‹åˆ†æè¡¨åˆå§‹åŒ–
         table = new String[VnArray.length + 1][VtArray.length + 1];
         table[0][0] = "Vn/Vt";
-        //³õÊ¼»¯Ê×ĞĞÊ×ÁĞ
+        //åˆå§‹åŒ–é¦–è¡Œé¦–åˆ—
         for (int i = 0; i < VtArray.length; i++) 
             table[0][i + 1] = (VtArray[i].toString().charAt(0) == '~') ? "$" : VtArray[i].toString();  
         for (int i = 0; i < VnArray.length; i++) 
             table[i + 1][0] = VnArray[i] + "";
-        //È«²¿ÖÃerror
+        //å…¨éƒ¨ç½®error
         for (int i = 0; i < VnArray.length; i++)
             for (int j = 0; j < VtArray.length; j++)
                 table[i + 1][j + 1] = "error";
             
-        //²åÈëÉú³ÉÊ½
+        //æ’å…¥ç”Ÿæˆå¼
         for (char A : VnSet) {
             ArrayList<String> l = experssionSet.get(A);
             for(String s : l){
@@ -270,7 +272,7 @@ class Test {
     }
 
     public void analyzeLL() {
-        System.out.println("****************LL·ÖÎö¹ı³Ì**********");
+        System.out.println("****************LLåˆ†æè¿‡ç¨‹**********");
         System.out.println("               Stack           Input     Action");
         analyzeStatck.push('$');
         analyzeStatck.push('E');
@@ -306,7 +308,7 @@ class Test {
             displayLL();
         }
         System.out.println("analyze LL1 successfully");
-        System.out.println("****************LL·ÖÎö¹ı³Ì**********");
+        System.out.println("****************LLåˆ†æè¿‡ç¨‹**********");
     }
 
     public void analyzeSLR() {
@@ -314,12 +316,12 @@ class Test {
         index = 0;
         stackState.push("0");
         char a = strInput.charAt(index);
-        System.out.println("****************SLR·ÖÎö¹ı³Ì**********");
+        System.out.println("****************SLRåˆ†æè¿‡ç¨‹**********");
         System.out.println("                    State         Symbol        Input         Action");
         this.displaySLR();
         while (true) {
             String s = stackState.peek();
-            // ²é±íÎªÒÆ½ø
+            // æŸ¥è¡¨ä¸ºç§»è¿›
             if (Action(s, a).charAt(0) == 's') {
                 stackState.push(Action(s, a).substring(1));
                 stackSymbol.push(a);
@@ -327,17 +329,17 @@ class Test {
                 action = "shift ";
                 displaySLR();
             }
-            // ²é±íÎª¹éÔ¼
+            // æŸ¥è¡¨ä¸ºå½’çº¦
             else if (Action(s, a).charAt(0) == 'r') {
-                // »ñÈ¡ÎÄ·¨´®
+                // è·å–æ–‡æ³•ä¸²
                 String str = LRGS[Integer.parseInt(Action(s, a).substring(1)) - 1];
                 int len = str.substring(3).length();
-                // µ¯³öÓÒ²¿³¤¶ÈµÄ·ûºÅºÍ×´Ì¬
+                // å¼¹å‡ºå³éƒ¨é•¿åº¦çš„ç¬¦å·å’ŒçŠ¶æ€
                 for (int i = 0; i < len; i++) {
                     stackSymbol.pop();
                     stackState.pop();
                 }
-                // gotoµÄÖµ½øÕ»
+                // gotoçš„å€¼è¿›æ ˆ
                 String t = stackState.peek();
                 stackState.push(Action(t, str.charAt(0)));
                 stackSymbol.push(str.charAt(0));
@@ -349,7 +351,7 @@ class Test {
                 return;
         }
         System.out.println("analyze SLR successfully");
-        System.out.println("****************SLR·ÖÎö¹ı³Ì**********");
+        System.out.println("****************SLRåˆ†æè¿‡ç¨‹**********");
     }
 
     public String Action(String s, char a) {
@@ -385,7 +387,7 @@ class Test {
     }
 
     public void displayLL() {
-        // Êä³ö LL1
+        // è¾“å‡º LL1
         Stack<Character> s = analyzeStatck;
         System.out.printf("%23s", s);
         System.out.printf("%13s", strInput.substring(index));
@@ -394,7 +396,7 @@ class Test {
     }
 
     public void displaySLR() {
-        // Êä³ö SLR
+        // è¾“å‡º SLR
         System.out.printf("%25s", stackState);
         System.out.printf("%15s", stackSymbol);
         System.out.printf("%15s", strInput.substring(index));
@@ -403,7 +405,7 @@ class Test {
     }
 
     public void ouput() {
-        System.out.println("*********first¼¯********");
+        System.out.println("*********firsté›†********");
         for (Character c : VnSet) {
             HashSet<Character> set = firstSet.get(c);
             System.out.printf("%10s",c + "  ->   ");
@@ -411,8 +413,8 @@ class Test {
                 System.out.print(var);
             System.out.println();
         }
-        System.out.println("**********first¼¯**********");
-        System.out.println("*********firstX¼¯********");
+        System.out.println("**********firsté›†**********");
+        System.out.println("*********firstXé›†********");
         Set<String> setStr =  firstSetX.keySet();
         for (String s : setStr) {
                 HashSet<Character> set = firstSetX.get(s);
@@ -421,8 +423,8 @@ class Test {
                     System.out.print(var);
                 System.out.println();
             }
-        System.out.println("**********firstX¼¯**********");
-        System.out.println("**********follow¼¯*********");
+        System.out.println("**********firstXé›†**********");
+        System.out.println("**********followé›†*********");
 
         for (Character c : VnSet) {
             HashSet<Character> set = followSet.get(c);
@@ -431,9 +433,9 @@ class Test {
                 System.out.print(var);
             System.out.println();
         }
-        System.out.println("**********follow¼¯**********");
+        System.out.println("**********followé›†**********");
 
-        System.out.println("**********LL1Ô¤²â·ÖÎö±í********");
+        System.out.println("**********LL1é¢„æµ‹åˆ†æè¡¨********");
 
         for (int i = 0; i < VnSet.size() + 1; i++) {
             for (int j = 0; j < VtSet.size() + 1; j++) {
@@ -441,9 +443,9 @@ class Test {
             }
             System.out.println();
         }
-        System.out.println("**********LL1Ô¤²â·ÖÎö±í********");
+        System.out.println("**********LL1é¢„æµ‹åˆ†æè¡¨********");
 
-        System.out.println("**********SLRÓï·¨·ÖÎö±í********");
+        System.out.println("**********SLRè¯­æ³•åˆ†æè¡¨********");
 
         for (int i = 0; i < 12 + 1; i++) {
             for (int j = 0; j < 10; j++) {
@@ -451,7 +453,7 @@ class Test {
             }
             System.out.println();
         }
-        System.out.println("**********SLRÓï·¨·ÖÎö±í********");
+        System.out.println("**********SLRè¯­æ³•åˆ†æè¡¨********");
 
     }
 
