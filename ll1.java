@@ -1,4 +1,4 @@
-package compiler;
+package com.moni;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,8 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-
-public class ll1 {
+public class Demo {
     public static void main(String[] args) {
         Test test = new Test();
         test.getNvNt();
@@ -20,111 +19,97 @@ public class ll1 {
 }
 
 class Test {
-    public HashMap<Character, HashSet<Character>> firstSet = new HashMap<Character, HashSet<Character>>();
-    public HashMap<String, HashSet<Character>> firstSetX = new HashMap<String, HashSet<Character>>();
-    // E T F : i ( | K : + $ |M : * $
+    //单个符号first集
+    public HashMap<Character, HashSet<Character>> firstSet = new HashMap<>();
+    //符号串first集
+    public HashMap<String, HashSet<Character>> firstSetX = new HashMap<>();
+    //开始符
     public Character S = 'E';
-    public HashMap<Character, HashSet<Character>> followSet = new HashMap<Character, HashSet<Character>>();
-    // E K: ) $ | T M : + ) $ | F : + * ) $
-    public HashSet<Character> VnSet = new HashSet<Character>();// E K T M F
-    public HashSet<Character> VtSet = new HashSet<Character>();// $ ) i + * (
-    public HashMap<Character, ArrayList<String>> experssionSet = new HashMap<Character, ArrayList<String>>();
+    public HashMap<Character, HashSet<Character>> followSet = new HashMap<>();
+    //非终结符
+    public HashSet<Character> VnSet = new HashSet<>();
+    //终结符
+    public HashSet<Character> VtSet = new HashSet<>();
+    //非终结符-产生式集合
+    public HashMap<Character, ArrayList<String>> experssionSet = new HashMap<>();
     // E: TK | K: +TK $ | T : FM | M: *FM $|F :i (E)
-    public String [][] table;
-    public String [][] tableSLR = { 
-            { "", "i", "+", "*", "(", ")", "$", "E", "T", "F" },
-            { "0", "s5", "", "", "s4", "", "", "1", "2", "3" }, 
-            { "1", "", "s6", "", "", "", "acc", "", "", "" },
-            { "2", "", "r2", "s7", "", "r2", "r2", "", "", "" }, 
-            { "3", "", "r4", "r4", "", "r4", "r4", "", "", "" },
-            { "4", "s5", "", "", "s4", "", "", "8", "2", "3" }, 
-            { "5", "", "r6", "r6", "", "r6", "r6", "", "", "" },
-            { "6", "s5", "", "", "s4", "", "", "", "9", "3" }, 
-            { "7", "s5", "", "", "s4", "", "", "", "", "10" },
-            { "8", "", "s6", "", "", "s11", "", "", "", "" }, 
-            { "9", "", "r1", "s7", "", "r1", "r1", "", "", "" },
-            { "10", "", "r3", "r3", "", "r3", "r3", "", "", "" },
-            { "11", "", "r5", "r5", "", "r5", "r5", "", "", "" } };
-    public String [] inputExperssion = { "E->TK", "K->+TK", "K->~", "T->FM", "M->*FM", "M->~", "F->i", "F->(E)"    
-};
+    public String[][] table;
+    public String[][] tableSLR = {
+            {"", "i", "+", "*", "(", ")", "$", "E", "T", "F"},
+            {"0", "s5", "", "", "s4", "", "", "1", "2", "3"},
+            {"1", "", "s6", "", "", "", "acc", "", "", ""},
+            {"2", "", "r2", "s7", "", "r2", "r2", "", "", ""},
+            {"3", "", "r4", "r4", "", "r4", "r4", "", "", ""},
+            {"4", "s5", "", "", "s4", "", "", "8", "2", "3"},
+            {"5", "", "r6", "r6", "", "r6", "r6", "", "", ""},
+            {"6", "s5", "", "", "s4", "", "", "", "9", "3"},
+            {"7", "s5", "", "", "s4", "", "", "", "", "10"},
+            {"8", "", "s6", "", "", "s11", "", "", "", ""},
+            {"9", "", "r1", "s7", "", "r1", "r1", "", "", ""},
+            {"10", "", "r3", "r3", "", "r3", "r3", "", "", ""},
+            {"11", "", "r5", "r5", "", "r5", "r5", "", "", ""}};
 
-    public Stack<Character> analyzeStatck = new Stack<Character>();
-    public Stack<String> stackState = new Stack<String>();
-    public Stack<Character> stackSymbol = new Stack<Character>();
+    public String[] inputExperssion = {"E->TK", "K->+TK", "K->~", "T->FM", "M->*FM", "M->~", "F->i", "F->(E)"};
+    public Stack<Character> analyzeStatck = new Stack<>();
+    public Stack<String> stackState = new Stack<>();
+    public Stack<Character> stackSymbol = new Stack<>();
     public String strInput = "i+i*i$";
     public String action = "";
-    public String[] LRGS = { "E->E+T", "E->T", "T->T*F", "T->F", "F->(E)", "F->i" };
+    public String[] LRGS = {"E->E+T", "E->T", "T->T*F", "T->F", "F->(E)", "F->i"};
     int index = 0;
-    int followHashCode = followSet.hashCode();
 
     public void Init() {
+        //获取生成式
         for (String e : inputExperssion) {
             String[] str = e.split("->");
             char c = str[0].charAt(0);
-            ArrayList<String> list = experssionSet.containsKey(c) ? experssionSet.get(c) : new ArrayList<String>();
+            ArrayList<String> list = experssionSet.containsKey(c) ? experssionSet.get(c) : new ArrayList<>();
             list.add(str[1]);
             experssionSet.put(c, list);
         }
-        for (Character c : VnSet)
+        //构造非终结符的first集
+        for (char c : VnSet)
             getFirst(c);
-
-        for (Character c : VnSet) {
-            ArrayList<String> l = experssionSet.get(c);
-            for (String s : l)
-                    getFirst(s);
-        }
+        //构造开始符的follow集
         getFollow(S);
-        for (Character c : VnSet) {
+        //构造非终结符的follow集
+        for (char c : VnSet)
             getFollow(c);
-        }
     }
 
+    /**
+     * 先求非终结符，再求终结符
+     */
     public void getNvNt() {
-        for (String e : inputExperssion) {
-            String[] str = e.split("->");
-            VnSet.add(str[0].charAt(0));
-        }
-        for (String e : inputExperssion) {
-            String[] str = e.split("->");
-            String right = str[1];
-            for (int i = 0; i < right.length(); i++) 
-                if (!VnSet.contains(right.charAt(i)))
-                    VtSet.add(right.charAt(i));      
-        }
+        for (String e : inputExperssion)
+            VnSet.add(e.split("->")[0].charAt(0));
+        for (String e : inputExperssion)
+            for (char c : e.split("->")[1].toCharArray())
+                if (!VnSet.contains(c))
+                    VtSet.add(c);
     }
 
-    public void getFirst(Character c) {
-        ArrayList<String> list = experssionSet.get(c);
-        HashSet<Character> set = firstSet.containsKey(c) ? firstSet.get(c) : new HashSet<Character>();
-        // c为终结符 直接添加
+    public void getFirst(char c) {
+        if (firstSet.containsKey(c))
+            return;
+        HashSet<Character> set = new HashSet<>();
+        // 若c为终结符 直接添加
         if (VtSet.contains(c)) {
             set.add(c);
             firstSet.put(c, set);
             return;
         }
         // c为非终结符 处理其每条产生式
-        for (String s : list) {
-            // c 推出空串 直接添加
-            if (s == Character.toString('~')) {
+        for (String s : experssionSet.get(c)) {
+            if ("~".equals(c)) {
                 set.add('~');
-            }
-            // X -> Y1Y2Y3… 情况
-            else {
-                // 从左往右扫描生成式右部
-                int i = 0;
-                while (i < s.length()) {
-                    char tn = s.charAt(i);
-                    //递归处理防止未初始化
-                    getFirst(tn);
-                    HashSet<Character> tvSet = firstSet.get(tn);
-                    // 将其first集加入左部
-                    for (Character tmp : tvSet)
-                        set.add(tmp);
-                    // 若包含空串 处理下一个符号
-                    if (tvSet.contains('~'))
-                        i++;
-                    // 否则退出 处理下一个产生式
-                    else
+            } else {
+                for (char cur : s.toCharArray()) {
+                    if (!firstSet.containsKey(cur))
+                        getFirst(cur);
+                    HashSet<Character> curFirst = firstSet.get(cur);
+                    set.addAll(curFirst);
+                    if (!curFirst.contains('~'))
                         break;
                 }
             }
@@ -133,23 +118,24 @@ class Test {
     }
 
     public void getFirst(String s) {
-        HashSet<Character> set = (firstSetX.containsKey(s))? firstSetX.get(s) : new HashSet<Character>();
+        if (firstSetX.containsKey(s))
+            return;
+        HashSet<Character> set = new HashSet<>();
         // 从左往右扫描该式
         int i = 0;
         while (i < s.length()) {
-            char tn = s.charAt(i);  
-            HashSet<Character> tvSet = firstSet.get(tn);
+            char cur = s.charAt(i);
+            if (!firstSet.containsKey(cur))
+                getFirst(cur);
+            HashSet<Character> rightSet = firstSet.get(cur);
             // 将其非空 first集加入左部
-            for (Character tmp : tvSet)
-                if(tmp != '~')
-                    set.add(tmp);
+            set.addAll(rightSet);
             // 若包含空串 处理下一个符号
-            if (tvSet.contains('~'))
+            if (rightSet.contains('~'))
                 i++;
-            // 否则结束
             else
                 break;
-            // 到了尾部 即所有符号的first集都包含空串 把空串加入
+            // 若到了尾部 即所有符号的first集都包含空串 把空串加入fisrt集
             if (i == s.length()) {
                 set.add('~');
             }
@@ -160,80 +146,56 @@ class Test {
 
     public void getFollow(char c) {
         ArrayList<String> list = experssionSet.get(c);
-        HashSet<Character> setA = followSet.containsKey(c) ? followSet.get(c) : new HashSet<Character>();
-        //如果是开始符 添加 $ 
-        if (c == S) {
-            setA.add('$');
-        }
-        //查找输入的所有产生式，确定c的后跟 终结符
-        for (Character ch : VnSet) {
-            ArrayList<String> l = experssionSet.get(ch);
-            for (String s : l) 
+        HashSet<Character> leftFollowSet = followSet.containsKey(c) ? followSet.get(c) : new HashSet<>();
+        //如果是开始符 添加 $
+        if (c == S)
+            leftFollowSet.add('$');
+        //查找输入的所有产生式，添加c的后跟 终结符
+        for (char ch : VnSet)
+            for (String s : experssionSet.get(ch))
                 for (int i = 0; i < s.length(); i++)
-                    if (s.charAt(i) == c && i + 1 < s.length() && VtSet.contains(s.charAt(i + 1)))
-                        setA.add(s.charAt(i + 1));
-        }
-        followSet.put(c, setA);
-        //处理c的每一条产生式
+                    if (c == s.charAt(i) && i + 1 < s.length() && VtSet.contains(s.charAt(i + 1)))
+                        leftFollowSet.add(s.charAt(i + 1));
+        followSet.put(c, leftFollowSet);
+        //反向扫描处理c的每一条产生式
         for (String s : list) {
             int i = s.length() - 1;
-            while (i >= 0 ) {
-                char tn = s.charAt(i);
+            while (i >= 0) {
+                char cur = s.charAt(i);
                 //只处理非终结符
-                if(VnSet.contains(tn)){
+                if (VnSet.contains(cur)) {
                     // 都按 A->αBβ  形式处理
-                    //若β不存在   followA 加入 followB
-                    //若β存在，把β的非空first集  加入followB
-                    //若β存在  且 first(β)包含空串   followA 加入 followB
-
-                    //若β存在 
-                    if (s.length() - i - 1 > 0) {
-                        String right = s.substring(i + 1);
-                        //非空first集 加入 followB
-                        HashSet<Character> setF = null;
-                        if(right.length() == 1){
-                            if(!firstSet.containsKey(right.charAt(0)))
-                        	getFirst(right.charAt(0));
-                            setF = firstSet.get(right.charAt(0));
-			}
-                        else{
-                            //先找出右部的first集
-                            if(!firstSetX.containsKey(right))
+                    //1.若β不存在   followA 加入 followB
+                    //2.若β存在，把β的非空first集  加入followB
+                    //3.若β存在  且first(β)包含空串  followA 加入 followB
+                    String right = s.substring(i + 1);
+                    HashSet<Character> rightFirstSet;
+                    HashSet<Character> curFollowSet = followSet.containsKey(cur) ? followSet.get(cur) : new HashSet<>();
+                    //先找出first(β),将非空的加入followB
+                    if (0 == right.length()) {
+                        curFollowSet.addAll(leftFollowSet);
+                    } else {
+                        if (1 == right.length()) {
+                            if (!firstSet.containsKey(right.charAt(0)))
+                                getFirst(right.charAt(0));
+                            rightFirstSet = firstSet.get(right.charAt(0));
+                        } else {
+                            if (!firstSetX.containsKey(right))
                                 getFirst(right);
-                            setF = firstSetX.get(right);
+                            rightFirstSet = firstSetX.get(right);
                         }
-                        HashSet<Character> setX = followSet.containsKey(tn) ? followSet.get(tn) : new HashSet<Character>();
-                        for (Character var : setF)
+                        for (char var : rightFirstSet)
                             if (var != '~')
-                                setX.add(var);
-                        followSet.put(tn, setX);
- 
-                        // 若first(β)包含空串   followA 加入 followB
-                        if(setF.contains('~')){
-                            if(tn != c){
-                                HashSet<Character> setB = followSet.containsKey(tn) ? followSet.get(tn) : new HashSet<Character>();
-                                for (Character var : setA)
-                                    setB.add(var);
-                                followSet.put(tn, setB);
-                             }  
-                        }
-                     }
-                    //若β不存在   followA 加入 followB
-                    else{
-                        // A和B相同不添加 
-                        if(tn != c){
-                            HashSet<Character> setB = followSet.containsKey(tn) ? followSet.get(tn) : new HashSet<Character>();
-                            for (Character var : setA)
-                                setB.add(var);
-                            followSet.put(tn, setB);
-                         }   
+                                curFollowSet.add(var);
+                        // 若first(β)包含空串,将followA加入followB
+                        if (rightFirstSet.contains('~'))
+                            curFollowSet.addAll(leftFollowSet);
                     }
-                    i--;
-                }  
-                //终结符往前看  如 A->aaaBCDaaaa  此时β为 CDaaaa 
-                else i--;         
-             }
-        }    
+                    followSet.put(cur, curFollowSet);
+                }
+                i--;
+            }
+        }
     }
 
 
@@ -244,29 +206,29 @@ class Test {
         table = new String[VnArray.length + 1][VtArray.length + 1];
         table[0][0] = "Vn/Vt";
         //初始化首行首列
-        for (int i = 0; i < VtArray.length; i++) 
-            table[0][i + 1] = (VtArray[i].toString().charAt(0) == '~') ? "$" : VtArray[i].toString();  
-        for (int i = 0; i < VnArray.length; i++) 
+        for (int i = 0; i < VtArray.length; i++)
+            table[0][i + 1] = (VtArray[i].toString().charAt(0) == '~') ? "$" : VtArray[i].toString();
+        for (int i = 0; i < VnArray.length; i++)
             table[i + 1][0] = VnArray[i] + "";
         //全部置error
         for (int i = 0; i < VnArray.length; i++)
             for (int j = 0; j < VtArray.length; j++)
                 table[i + 1][j + 1] = "error";
-            
         //插入生成式
         for (char A : VnSet) {
-            ArrayList<String> l = experssionSet.get(A);
-            for(String s : l){
+            for (String s : experssionSet.get(A)) {
+                if (!firstSetX.containsKey(s))
+                    getFirst(s);
                 HashSet<Character> set = firstSetX.get(s);
-                 for (char a : set)
+                for (char a : set)
                     insert(A, a, s);
-                 if(set.contains('~'))  {
+                if (set.contains('~')) {
                     HashSet<Character> setFollow = followSet.get(A);
-                    if(setFollow.contains('$'))
-                        insert(A, '$', s);  
+                    if (setFollow.contains('$'))
+                        insert(A, '$', s);
                     for (char b : setFollow)
-                        insert(A, b, s);                    
-                 }
+                        insert(A, b, s);
+                }
             }
         }
     }
@@ -373,12 +335,13 @@ class Test {
         }
         return "";
     }
-    public void insert(char X, char a,String s) {
-        if(a == '~') a = '$';
+
+    public void insert(char X, char a, String s) {
+        if (a == '~') a = '$';
         for (int i = 0; i < VnSet.size() + 1; i++) {
             if (table[i][0].charAt(0) == X)
                 for (int j = 0; j < VtSet.size() + 1; j++) {
-                    if (table[0][j].charAt(0) == a){
+                    if (table[0][j].charAt(0) == a) {
                         table[i][j] = s;
                         return;
                     }
@@ -408,21 +371,21 @@ class Test {
         System.out.println("*********first集********");
         for (Character c : VnSet) {
             HashSet<Character> set = firstSet.get(c);
-            System.out.printf("%10s",c + "  ->   ");
+            System.out.printf("%10s", c + "  ->   ");
             for (Character var : set)
                 System.out.print(var);
             System.out.println();
         }
         System.out.println("**********first集**********");
         System.out.println("*********firstX集********");
-        Set<String> setStr =  firstSetX.keySet();
+        Set<String> setStr = firstSetX.keySet();
         for (String s : setStr) {
-                HashSet<Character> set = firstSetX.get(s);
-                System.out.printf("%10s",s + "  ->   ");
-                for (Character var : set)
-                    System.out.print(var);
-                System.out.println();
-            }
+            HashSet<Character> set = firstSetX.get(s);
+            System.out.printf("%10s", s + "  ->   ");
+            for (Character var : set)
+                System.out.print(var);
+            System.out.println();
+        }
         System.out.println("**********firstX集**********");
         System.out.println("**********follow集*********");
 
@@ -458,3 +421,4 @@ class Test {
     }
 
 }
+
